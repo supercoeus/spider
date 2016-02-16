@@ -7,10 +7,12 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import blade.kit.FileKit;
 import blade.kit.PatternKit;
 import blade.kit.http.HttpRequest;
-import blade.kit.log.Logger;
 
 /**
  * 抓取Q友网头像
@@ -19,7 +21,7 @@ import blade.kit.log.Logger;
  */
 public class QqYou {
 
-	private static final Logger LOGGER = Logger.getLogger(QqYou.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(QqYou.class);
 	
 	private static final String site = "http://www.qqyou.com";
 	

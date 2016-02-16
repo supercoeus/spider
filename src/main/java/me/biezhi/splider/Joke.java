@@ -3,13 +3,14 @@ package me.biezhi.splider;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 import org.sql2o.Sql2o;
 
 import blade.kit.TaskKit;
 import blade.kit.http.HttpRequest;
-import blade.kit.log.Logger;
 
 /**
  * 爬取 http://joke.setin.cn/ 所有笑话
@@ -20,7 +21,7 @@ public class Joke {
 
 	private static final String UA = "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)";
     
-	private static final Logger LOGGER = Logger.getLogger(Joke.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Joke.class);
 	
 	private String base_url = "http://joke.setin.cn/p/%d.html";
 	
@@ -45,8 +46,12 @@ public class Joke {
 				String content = getBody();
 				Pattern pattern = Pattern.compile("<div.*?body\">([\\s\\S]*?)<p>([\\s\\S]*?)</p>([\\s\\S]*?)</div>");
 		        Matcher matcher = pattern.matcher(content);
-		        try (Connection con = sql2o.beginTransaction()) {
-		            Query query = con.createQuery(sql);
+		        Connection con = null;
+		        try {
+		        	
+		        	con = sql2o.beginTransaction();
+		        	
+		        	Query query = con.createQuery(sql);
 			        //遍历正则表达式匹配的信息
 			        while (matcher.find()) {
 			        	String joke = matcher.group(2);
@@ -63,7 +68,13 @@ public class Joke {
 			        	System.exit(0);
 			        }
 		            start_page ++;
-		        }
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					if(null != con){
+						con.close();
+					}
+				}
 			}
 		}, 3);
 		
